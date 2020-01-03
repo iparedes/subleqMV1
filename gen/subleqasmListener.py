@@ -26,6 +26,15 @@ class subleqasmListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by subleqasmParser#data.
+    def enterData(self, ctx:subleqasmParser.DataContext):
+        pass
+
+    # Exit a parse tree produced by subleqasmParser#data.
+    def exitData(self, ctx:subleqasmParser.DataContext):
+        pass
+
+
     # Enter a parse tree produced by subleqasmParser#val.
     def enterVal(self, ctx:subleqasmParser.ValContext):
         pass
@@ -116,6 +125,15 @@ class subleqasmListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by subleqasmParser#label.
+    def enterLabel(self, ctx:subleqasmParser.LabelContext):
+        pass
+
+    # Exit a parse tree produced by subleqasmParser#label.
+    def exitLabel(self, ctx:subleqasmParser.LabelContext):
+        pass
+
+
     # Enter a parse tree produced by subleqasmParser#sep.
     def enterSep(self, ctx:subleqasmParser.SepContext):
         pass
@@ -125,12 +143,12 @@ class subleqasmListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by subleqasmParser#label.
-    def enterLabel(self, ctx:subleqasmParser.LabelContext):
+    # Enter a parse tree produced by subleqasmParser#literal.
+    def enterLiteral(self, ctx:subleqasmParser.LiteralContext):
         pass
 
-    # Exit a parse tree produced by subleqasmParser#label.
-    def exitLabel(self, ctx:subleqasmParser.LabelContext):
+    # Exit a parse tree produced by subleqasmParser#literal.
+    def exitLiteral(self, ctx:subleqasmParser.LiteralContext):
         pass
 
 

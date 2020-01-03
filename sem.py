@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger(__name__)
+
 from gen.subleqasmListener import *
 
 
@@ -17,9 +20,9 @@ class Sem(subleqasmListener):
         a=self.Stack.pop()
         return a
 
-
         # Enter a parse tree produced by subleqasmParser#program.
     def enterProgram(self, ctx:subleqasmParser.ProgramContext):
+        logger.debug("enterProgram %s",ctx.getText())
         pass
 
     # Exit a parse tree produced by subleqasmParser#program.
@@ -33,11 +36,45 @@ class Sem(subleqasmListener):
 
     # Exit a parse tree produced by subleqasmParser#instr.
     def exitInstr(self, ctx:subleqasmParser.InstrContext):
+        logger.debug("exitInstr %s",ctx.getText())
+
         c=self.pop()
         b=self.pop()
         a=self.pop()
         instr=[a,b,c]
-        self.Context['instr'].append(instr)
+        self.Context['instr']+=instr
+
+
+    # Enter a parse tree produced by subleqasmParser#data.
+    def enterData(self, ctx:subleqasmParser.DataContext):
+        pass
+
+    # Exit a parse tree produced by subleqasmParser#data.
+    def exitData(self, ctx:subleqasmParser.DataContext):
+        logger.debug("exitData %s",ctx.getText())
+
+        instrs=[]
+        l=self.pop()
+        while(l>=3):
+            c=self.pop()
+            b=self.pop()
+            a=self.pop()
+            instr=[a,b,c]
+            instrs=instrs+instr
+            l-=3
+        if l>0:
+            pad=3-l
+            instr=[]
+            for i in range(0,l):
+                a=self.pop()
+                instr.append(a)
+            for i in range(0,pad):
+                instr.append(0)
+            instrs=instrs+instr
+        for i in instrs:
+            self.Context['instr'].append(i)
+
+
 
     # Enter a parse tree produced by subleqasmParser#val.
     def enterVal(self, ctx:subleqasmParser.ValContext):
@@ -45,8 +82,38 @@ class Sem(subleqasmListener):
 
     # Exit a parse tree produced by subleqasmParser#val.
     def exitVal(self, ctx:subleqasmParser.ValContext):
+        logger.debug("exitVal %s",ctx.getText())
+
         self.MemPointer+=1
 
+
+
+
+    # Enter a parse tree produced by subleqasmParser#valLiteral.
+    def enterLiteral(self, ctx:subleqasmParser.LiteralContext):
+        logger.debug("enterLiteral %s",ctx.getText())
+
+        # Remove the quotes
+        l=ctx.getText()[1:-1]
+        lon=len(l)
+        for i in range(0,lon):
+            self.push(ord(l[i]))
+        # and finally pushes the length of the literal
+        self.push(lon)
+        # pad=3-(lon%3)
+        # if pad<3:
+        #     for i in range(0,pad):
+        #         self.push(0)
+
+
+    # Exit a parse tree produced by subleqasmParser#valLiteral.
+    def exitLiteral(self, ctx:subleqasmParser.LiteralContext):
+        logger.debug("exitLiteral %s",ctx.getText())
+
+        l=ctx.getText()
+        # Modify the mempointer with the length of the literal without the quotes
+        self.MemPointer+=len(l)-2
+        pass
 
     # Enter a parse tree produced by subleqasmParser#minExpr.
     def enterMinExpr(self, ctx:subleqasmParser.MinExprContext):
@@ -54,6 +121,8 @@ class Sem(subleqasmListener):
 
     # Exit a parse tree produced by subleqasmParser#minExpr.
     def exitMinExpr(self, ctx:subleqasmParser.MinExprContext):
+        logger.debug("exitMinExpr %s",ctx.getText())
+
         a=self.pop()
         a=-a
         self.push(a)
@@ -73,6 +142,8 @@ class Sem(subleqasmListener):
 
     # Exit a parse tree produced by subleqasmParser#addExpr.
     def exitAddExpr(self, ctx:subleqasmParser.AddExprContext):
+        logger.debug("exitAddExpr %s",ctx.getText())
+
         b=self.pop()
         a=self.pop()
 
@@ -88,6 +159,8 @@ class Sem(subleqasmListener):
 
     # Exit a parse tree produced by subleqasmParser#mulExpr.
     def exitMulExpr(self, ctx:subleqasmParser.MulExprContext):
+        logger.debug("exitMulExpr %s",ctx.getText())
+
         b=self.pop()
         a=self.pop()
 
@@ -126,6 +199,8 @@ class Sem(subleqasmListener):
 
     # Enter a parse tree produced by subleqasmParser#numberAtom.
     def enterNumberAtom(self, ctx:subleqasmParser.NumberAtomContext):
+        logger.debug("enterNumberAtom %s",ctx.getText())
+
         self.push(int(ctx.getText()))
 
     # Exit a parse tree produced by subleqasmParser#numberAtom.
@@ -135,6 +210,8 @@ class Sem(subleqasmListener):
 
     # Enter a parse tree produced by subleqasmParser#varAtom.
     def enterVarAtom(self, ctx:subleqasmParser.VarAtomContext):
+        logger.debug("enterVarAtom %s",ctx.getText())
+
         l=ctx.getText()
         a=self.Labels[l]
         self.push(a)
@@ -155,6 +232,8 @@ class Sem(subleqasmListener):
 
     # Enter a parse tree produced by subleqasmParser#label.
     def enterLabel(self, ctx:subleqasmParser.LabelContext):
+        logger.debug("enterLabel %s",ctx.getText())
+
         # remove the colon
         l=ctx.getText()[:-1]
         self.Labels[l]=self.MemPointer

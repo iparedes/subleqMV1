@@ -1,13 +1,16 @@
 grammar subleqasm;
 
 
-program : instr+
+program : (instr | data)+
         ;
 
-instr   : val sep val sep val NEWLINE
+instr   : val sep val sep val NEWLINE?
         ;
 
-val     :   expr
+data    : (label (NEWLINE)*)? literal NEWLINE?
+        ;
+
+val     : expr
         ;
 
 expr
@@ -26,20 +29,29 @@ atom
     ;
 
 
+label    :  VARIABLE COLON
+         ;
+
 sep     : COMMA | NEWLINE
         ;
 
+literal :  QUOTEDALPHANUM
+        ;
+
 NUMBER  :   DIGIT+;
+
+QUOTEDALPHANUM    : QUOTE  [a-zA-Z0-9 !,#$%&/()]+ QUOTE
+            ;
+
+VARIABLE    :   [a-zA-Z][a-zA-Z0-9]*
+            ;
 
 DIGIT
    : [0-9]
    ;
 
-VARIABLE :  [a-zA-Z][a-zA-Z0-9]*
-         ;
 
-label    :  VARIABLE COLON
-         ;
+
 
 MULT:   '*';
 DIV:    '/';
@@ -49,6 +61,7 @@ COMMA:  ',';
 COLON:  ':';
 OPAR:   '(';
 CPAR:   ')';
+QUOTE:  '"';
 NEWLINE   : '\r' '\n' | '\n' | '\r';
 WS
    : [ \r\n] + -> skip
