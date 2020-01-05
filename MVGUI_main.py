@@ -1,7 +1,9 @@
 import wx
 import gettext
+from antlr4 import FileStream
 from MVGUI import MVGUIFrame
 from MV import MV
+from compiler import Compiler
 
 class MyFrame(MVGUIFrame):
     def __init__(self, *args, **kwds):
@@ -77,10 +79,15 @@ if __name__=="__main__":
     gettext.install("app") # replace with the appropriate catalog name
 
 
+
+    inputfile=FileStream("hello.slq")
+    #stream = antlr4.InputStream("1,2,3")
+    S=Compiler(inputfile)
+    S.Walk()
+
     J=MV()
-    J.load(0,3,4,6)
-    J.load(3,7,7,7)
-    J.load(6,3,4,0)
+    J.load(S.Context['instr'])
+
 
     app = MyApp(0)
     app.SetM(J)
