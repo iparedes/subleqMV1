@@ -8,9 +8,9 @@ logging.basicConfig(filename="sem.log",level=logging.DEBUG)
 #logging.basicConfig(level=logging.INFO)
 logger=logging.getLogger(__name__)
 
-inputfile=FileStream("hello.slq")
-#stream = antlr4.InputStream("1,2,3")
-S=Compiler(inputfile)
+stream=FileStream("hello.slq")
+#stream = antlr4.InputStream("1,hop+10,3\nhop:0,1,2")
+S=Compiler(stream)
 S.Walk()
 
 J=MV()
